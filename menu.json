@@ -160,6 +160,48 @@
         "dish_name": "दम बिर्याणी किलो",
         "dish_name_en": "Dum Biryani Kilo",
         "price": "1500.00"
+      },
+      {
+        "sub_category": "राईस प्लेट (Rice Plate)",
+        "sub_category_en": "Rice Plate",
+        "dish_name": "स्पे. मटण राईस प्लेट",
+        "dish_name_en": "Spe Mutton Rice Plate",
+        "price": "580.00"
+      },
+      {
+        "sub_category": "राईस प्लेट (Rice Plate)",
+        "sub_category_en": "Rice Plate",
+        "dish_name": "मटण राईस प्लेट",
+        "dish_name_en": "Mutton Rice Plate",
+        "price": "400.00"
+      },
+      {
+        "sub_category": "राईस प्लेट (Rice Plate)",
+        "sub_category_en": "Rice Plate",
+        "dish_name": "स्पे. गावठी चिकन राईस प्लेट",
+        "dish_name_en": "Spe Gavthi Chicken Rice Plate",
+        "price": "580.00"
+      },
+      {
+        "sub_category": "राईस प्लेट (Rice Plate)",
+        "sub_category_en": "Rice Plate",
+        "dish_name": "गावठी राईस प्लेट",
+        "dish_name_en": "Gavthi Rice Plate",
+        "price": "400.00"
+      },
+      {
+        "sub_category": "राईस प्लेट (Rice Plate)",
+        "sub_category_en": "Rice Plate",
+        "dish_name": "स्पे. चिकन राईस प्लेट",
+        "dish_name_en": "Spe Chicken Rice Plate",
+        "price": "470.00"
+      },
+      {
+        "sub_category": "राईस प्लेट (Rice Plate)",
+        "sub_category_en": "Rice Plate",
+        "dish_name": "चिकन राईस प्लेट",
+        "dish_name_en": "Chicken Rice Plate",
+        "price": "320.00"
       }
     ]
   },
