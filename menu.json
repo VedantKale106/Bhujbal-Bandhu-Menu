@@ -37,7 +37,7 @@
         "dish_name_en": "Rassa Mutton Thali (5 Pcs)",
         "description": "(मटण रस्सा, भाकरी/चपाती, इंद्रायणी भात)",
         "description_en": "(Mutton Rassa, Bhakri/Chapati, Indrayani Bhat)",
-        "price": "380.00"
+        "price": "400.00"
       },
       {
         "sub_category": "व्हेज (Veg)",
@@ -91,7 +91,7 @@
         "dish_name_en": "Rassa Chicken Thali (5 Pcs)",
         "description": "(चिकन रस्सा, भाकरी/चपाती, इंद्रायणी भात)",
         "description_en": "(Chicken Rassa, Bhakri/Chapati, Indrayani Bhat)",
-        "price": "280.00"
+        "price": "320.00"
       },
       {
         "sub_category": "अंडा (Egg)",
@@ -145,7 +145,7 @@
         "dish_name_en": "Ga. Rassa Chicken Thali (5 Pcs)",
         "description": "(चिकन रस्सा, भाकरी/चपाती, इंद्रायणी भात)",
         "description_en": "(Chicken Rassa, Bhakri/Chapati, Indrayani Bhat)",
-        "price": "300.00"
+        "price": "400.00"
       },
       {
         "sub_category": "चिकन बिर्याणी (Chicken Biryani)",
@@ -162,43 +162,43 @@
         "price": "1500.00"
       },
       {
-        "sub_category": "राईस प्लेट (Rice Plate)",
-        "sub_category_en": "Rice Plate",
+        "sub_category": "मटण (बोल्हाई) (Mutton - Bolhai)",
+        "sub_category_en": "Mutton (Bolhai)",
         "dish_name": "स्पे. मटण राईस प्लेट",
         "dish_name_en": "Spe Mutton Rice Plate",
         "price": "580.00"
       },
       {
-        "sub_category": "राईस प्लेट (Rice Plate)",
-        "sub_category_en": "Rice Plate",
+        "sub_category": "मटण (बोल्हाई) (Mutton - Bolhai)",
+        "sub_category_en": "Mutton (Bolhai)",
         "dish_name": "मटण राईस प्लेट",
         "dish_name_en": "Mutton Rice Plate",
         "price": "400.00"
       },
       {
-        "sub_category": "राईस प्लेट (Rice Plate)",
-        "sub_category_en": "Rice Plate",
+        "sub_category": "चिकन (गावरान) (Chicken - Gavran)",
+        "sub_category_en": "Chicken (Gavran)",
         "dish_name": "स्पे. गावठी चिकन राईस प्लेट",
         "dish_name_en": "Spe Gavthi Chicken Rice Plate",
         "price": "580.00"
       },
       {
-        "sub_category": "राईस प्लेट (Rice Plate)",
-        "sub_category_en": "Rice Plate",
+        "sub_category": "चिकन (गावरान) (Chicken - Gavran)",
+        "sub_category_en": "Chicken (Gavran)",
         "dish_name": "गावठी राईस प्लेट",
         "dish_name_en": "Gavthi Rice Plate",
         "price": "400.00"
       },
       {
-        "sub_category": "राईस प्लेट (Rice Plate)",
-        "sub_category_en": "Rice Plate",
+        "sub_category": "चिकन (बॉयलर) (Chicken - Boiler)",
+        "sub_category_en": "Chicken (Boiler)",
         "dish_name": "स्पे. चिकन राईस प्लेट",
         "dish_name_en": "Spe Chicken Rice Plate",
         "price": "470.00"
       },
       {
-        "sub_category": "राईस प्लेट (Rice Plate)",
-        "sub_category_en": "Rice Plate",
+        "sub_category": "चिकन (बॉयलर) (Chicken - Boiler)",
+        "sub_category_en": "Chicken (Boiler)",
         "dish_name": "चिकन राईस प्लेट",
         "dish_name_en": "Chicken Rice Plate",
         "price": "320.00"
