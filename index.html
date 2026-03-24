@@ -197,6 +197,17 @@
         let currentLang = 'en'; 
         let activeCategory = 'All';
         let menuData = [];
+        let isMenuLoading = false;
+
+        const AUTO_REFRESH_INTERVAL_MS = 3 * 60 * 1000;
+
+        // Configure this with your published Google Sheet details.
+        // Keep sheetId empty to use built-in mock fallback data.
+        const GOOGLE_SHEET_CONFIG = {
+            sheetId: '17aFJxPh2dmu2DgR8BQnGiJdG9Mw7prq_-iMaAIEoCp8',
+            sheetName: '',
+            gid: ''
+        };
 
         // Comprehensive Mock Data as Fallback so the beautiful UI works immediately
         const mockMenuData = [
@@ -235,18 +246,164 @@
             }
         ];
 
-        async function loadMenu() {
-            try {
-                const response = await fetch('menu.json');
-                if (!response.ok) throw new Error("File not found");
-                const data = await response.json();
-                menuData = Array.isArray(data) ? data : mockMenuData;
-            } catch (error) {
-                console.warn('Using beautiful fallback data since menu.json is not present.');
-                menuData = mockMenuData;
+        function normalizeHeaderKey(value) {
+            return String(value || '')
+                .trim()
+                .toLowerCase()
+                .replace(/\s+/g, '_')
+                .replace(/[^a-z0-9_]/g, '');
+        }
+
+        function parseVegFlag(value) {
+            if (value === null || value === undefined || value === '') return undefined;
+            const normalized = String(value).trim().toLowerCase();
+            if (['true', '1', 'yes', 'y', 'veg', 'v'].includes(normalized)) return true;
+            if (['false', '0', 'no', 'n', 'non-veg', 'nonveg', 'nv'].includes(normalized)) return false;
+            return undefined;
+        }
+
+        function parseSheetPrice(row) {
+            const oldPrice = row.price_old || row.old_price || row.old;
+            const currentPrice = row.price_current || row.current_price || row.current;
+            const singlePrice = row.price || row.rate;
+
+            if (oldPrice && currentPrice) {
+                return {
+                    old: String(oldPrice).trim(),
+                    current: String(currentPrice).trim()
+                };
             }
+
+            if (singlePrice !== undefined && singlePrice !== null && String(singlePrice).trim() !== '') {
+                return String(singlePrice).trim();
+            }
+
+            return '';
+        }
+
+        function transformSheetRowsToMenu(rows) {
+            const sectionsByKey = new Map();
+            const notes = [];
+
+            rows.forEach((row) => {
+                const noteMr = row.note || '';
+                const noteEn = row.note_en || row.noteenglish || '';
+                if (noteMr || noteEn) {
+                    notes.push({ note: noteMr || noteEn, note_en: noteEn || noteMr });
+                    return;
+                }
+
+                const categoryMr = row.category || row.section || '';
+                const categoryEn = row.category_en || row.categoryenglish || row.section_en || categoryMr;
+                const subCategoryMr = row.sub_category || row.subcategory || '';
+                const subCategoryEn = row.sub_category_en || row.subcategory_en || row.subcategoryenglish || subCategoryMr;
+                const dishMr = row.dish_name || row.item_name || row.item || '';
+                const dishEn = row.dish_name_en || row.item_name_en || row.item_en || dishMr;
+
+                if (!categoryEn || !dishEn) return;
+
+                const sectionKey = categoryEn;
+                if (!sectionsByKey.has(sectionKey)) {
+                    sectionsByKey.set(sectionKey, {
+                        category: categoryMr || categoryEn,
+                        category_en: categoryEn,
+                        items: []
+                    });
+                }
+
+                sectionsByKey.get(sectionKey).items.push({
+                    sub_category: subCategoryMr || subCategoryEn,
+                    sub_category_en: subCategoryEn || subCategoryMr,
+                    dish_name: dishMr || dishEn,
+                    dish_name_en: dishEn || dishMr,
+                    description: row.description || '',
+                    description_en: row.description_en || row.descriptionenglish || row.description || '',
+                    price: parseSheetPrice(row),
+                    isVeg: parseVegFlag(row.is_veg ?? row.veg ?? row.veg_flag)
+                });
+            });
+
+            const result = Array.from(sectionsByKey.values());
+            if (notes.length) result.push({ notes });
+            return result;
+        }
+
+        function parseGoogleVisualizationResponse(text) {
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start === -1 || end === -1) throw new Error('Invalid Google Sheets response format.');
+            const jsonText = text.slice(start, end + 1);
+            const payload = JSON.parse(jsonText);
+
+            const cols = (payload.table?.cols || []).map((col, idx) => {
+                const header = col.label || col.id || `column_${idx + 1}`;
+                return normalizeHeaderKey(header);
+            });
+
+            const rows = (payload.table?.rows || []).map((row) => {
+                const record = {};
+                cols.forEach((key, idx) => {
+                    const cell = row.c?.[idx];
+                    record[key] = cell?.v ?? '';
+                });
+                return record;
+            });
+
+            return transformSheetRowsToMenu(rows);
+        }
+
+        async function fetchMenuFromGoogleSheet() {
+            if (!GOOGLE_SHEET_CONFIG.sheetId) return null;
+
+            const sheetParam = GOOGLE_SHEET_CONFIG.sheetName
+                ? `&sheet=${encodeURIComponent(GOOGLE_SHEET_CONFIG.sheetName)}`
+                : '';
+            const gidParam = GOOGLE_SHEET_CONFIG.gid ? `&gid=${encodeURIComponent(GOOGLE_SHEET_CONFIG.gid)}` : '';
+            const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_CONFIG.sheetId}/gviz/tq?tqx=out:json${sheetParam}${gidParam}`;
+
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to fetch Google Sheet data.');
+
+            const rawText = await response.text();
+            const data = parseGoogleVisualizationResponse(rawText);
+            if (!Array.isArray(data) || data.length === 0) {
+                throw new Error('Google Sheet returned empty/invalid menu data.');
+            }
+
+            return data;
+        }
+
+        async function loadMenu(options = {}) {
+            const { preserveSearch = true } = options;
+            if (isMenuLoading) return;
+
+            isMenuLoading = true;
+            try {
+                const sheetData = await fetchMenuFromGoogleSheet();
+                if (sheetData) {
+                    menuData = sheetData;
+                } else {
+                    menuData = mockMenuData;
+                }
+            } catch (error) {
+                console.warn('Using fallback menu data:', error);
+                menuData = mockMenuData;
+            } finally {
+                isMenuLoading = false;
+            }
+
             renderCategories();
-            renderMenu();
+            const currentSearch = preserveSearch ? (document.getElementById('searchInput')?.value || '') : '';
+            renderMenu(currentSearch);
+        }
+
+        function startAutoRefresh() {
+            setInterval(() => {
+                // Refresh only when tab is visible to avoid unnecessary requests.
+                if (document.visibilityState === 'visible') {
+                    loadMenu({ preserveSearch: true });
+                }
+            }, AUTO_REFRESH_INTERVAL_MS);
         }
 
         function renderCategories() {
@@ -439,6 +596,7 @@
 
         // Initialize App
         loadMenu();
+        startAutoRefresh();
 
         // Welcome screen logic
         window.addEventListener('load', () => {
